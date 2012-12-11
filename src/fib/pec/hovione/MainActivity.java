@@ -33,7 +33,8 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
-	private int REQUEST_ENABLE_BT;
+	private static final int REQUEST_ENABLE_BT = 1; //constant per identificar peticio de engegar bluetooth
+	private boolean bluetoothEnabled;
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -50,6 +51,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	
 	ArrayAdapter<String> myArrayAdapter;//TODO Implementar la llista de dispositius BT i la UI
 	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -58,7 +60,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		// Posa en marxa l'ActionBar
 		final ActionBar actionBar = getActionBar();
 		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);//Crea les TABS
-
+		
 		// Crea l'adapter que retornarà un fragment per cada una de les 3 
 		// seccions primaries de l'app.
 		mSectionsPagerAdapter = new SectionsPagerAdapter(
@@ -87,31 +89,54 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					.setTabListener(this));
 		}
 		
-		settingUpBluetooth();		
-		findingDevices();
+		setUpBluetooth();		
+		findRemoteDevices();
 	}
 	
-	private void settingUpBluetooth() {
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	    super.onActivityResult(requestCode, resultCode, data);
+	    
+	    if (requestCode == REQUEST_ENABLE_BT) {
+	    	if (resultCode == RESULT_OK) bluetoothEnabled = true;
+	    	else bluetoothEnabled = false;
+	    }
+	    if (data.getAction().equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+	    }
+	   
+	}
+	
+	@Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //this.unregisterReceiver(mReceiver);
+    }
+	
+	private void setUpBluetooth() {
 		//1r Revisar que el dispositiu te Bluetooth
-		mBluetoothAdapter.getDefaultAdapter();
-		if (mBluetoothAdapter == null) {
-			//El dispositiu no suporta Bluetooth. Mostrar un missatge!
-			//TODO Mostrar un missatge per pantalla dient que no suporta BT. Usar FragmentAlertDialog !!
-		}
-		
-		//2n Engegar el Bluetooth
-		if (!mBluetoothAdapter.isEnabled()) {
-			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-			startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+		bluetoothEnabled = false;
+		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+		if (mBluetoothAdapter != null) { //el dispositiu soporta bluetooth
+			//Engegar el Bluetooth
+			if (!mBluetoothAdapter.isEnabled()) {
+				Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+				startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+			}
+			else {
+				//El Bluetooth ja estava activat
+				bluetoothEnabled = true;
+			}		
 		}
 		else {
-			//El Bluetooth ja estava activat
-			REQUEST_ENABLE_BT = RESULT_OK;
+			//El dispositiu no suporta Bluetooth. Mostrar un missatge!
+			//TODO Mostrar un missatge per pantalla dient que no suporta BT. Usar FragmentAlertDialog !!			
+			
 		}
 	}
 	
-	private void findingDevices() {
-		if (REQUEST_ENABLE_BT == RESULT_OK) {
+	
+	private void findRemoteDevices() {
+		if (bluetoothEnabled) {
 			//Tenim el BT activat, procedim a buscar dispositius
 			
 			//1r Busquem entre la llista d'emparellats
@@ -139,13 +164,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			 connecting and it is safe to call without actually checking whether it is running or not 
 			 (but if you do want to check, call isDiscovering())
 			 */
-			mBluetoothAdapter.cancelDiscovery();
+			mBluetoothAdapter.cancelDiscovery(); //?¿?¿?¿
 			
 			//TODO Revisar que funcioni aixi
 			AcceptThread thread = new AcceptThread();
 			thread.run();
 		}
-		else if (REQUEST_ENABLE_BT == RESULT_CANCELED){
+		else {
 			//El BT no s'ha activat degut a un error (o l'usuari ha respos 'no')
 			//TODO Completar la UI de forma que al no tenir el BT activat, no es pot fer res. (o el minim)
 			int i = 0;
