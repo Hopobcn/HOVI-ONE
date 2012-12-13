@@ -102,6 +102,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    	else bluetoothEnabled = false;
 	    }
 	    if (data.getAction().equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+	    	//no se si s'ha de posar aquesta funcio
 	    }
 	   
 	}
