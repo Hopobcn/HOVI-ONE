@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -51,11 +52,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	
 	ArrayAdapter<String> myArrayAdapter;//TODO Implementar la llista de dispositius BT i la UI
 	
+	int mStackLevel = 0;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
 
 		// Posa en marxa l'ActionBar
 		final ActionBar actionBar = getActionBar();
@@ -91,6 +94,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		
 		setUpBluetooth();		
 		findRemoteDevices();
+		setBTDialogFragment();
 	}
 	
 	@Override
@@ -158,7 +162,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			
 			// Register for broadcasts when discovery has finished
 	        filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-	        this.registerReceiver(mReceiver, filter);
+	        registerReceiver(mReceiver, filter);
 			
 			/**
 			 Notice that cancelDiscovery() is called before the connection is made. You should always do this before 
@@ -174,11 +178,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		else {
 			//El BT no s'ha activat degut a un error (o l'usuari ha respos 'no')
 			//TODO Completar la UI de forma que al no tenir el BT activat, no es pot fer res. (o el minim)
-			int i = 0;
-			i = 2*2*i;
+			
 		}
 	}
-
+	
+	public void setBTDialogFragment() {
+		++mStackLevel;
+		android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+		if (prev != null) {
+			ft.remove(prev);
+		}
+		ft.addToBackStack(null);
+		
+		DialogFragment newFragment = BTDialogFragment.newInstance(mStackLevel);
+		newFragment.show(ft, "dialog");
+	}
+	
 	/**
 	 * ActionBar - Menu
 	 */
