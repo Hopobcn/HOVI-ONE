@@ -91,6 +91,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 					.setText(mSectionsPagerAdapter.getPageTitle(i))
 					.setTabListener(this));
 		}
+		myArrayAdapter = new ArrayAdapter<String>();
 		
 		setUpBluetooth();		
 		findRemoteDevices();
@@ -172,8 +173,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 			mBluetoothAdapter.cancelDiscovery(); //?¿?¿?¿
 			
 			//TODO Revisar que funcioni aixi
-			AcceptThread thread = new AcceptThread();
-			thread.run();
+			//AcceptThread thread = new AcceptThread();
+			//thread.run();
 		}
 		else {
 			//El BT no s'ha activat degut a un error (o l'usuari ha respos 'no')
