@@ -33,8 +33,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
+public class MainActivity extends FragmentActivity {
+	
+	//////// Constants De La Classe ////////////////////////////////////////////////////////////////////////////////////////////	
 	private static final int REQUEST_ENABLE_BT = 1; //constant per identificar peticio de engegar bluetooth
+	
+	/////// Atributs De La Classe /////////////////////////////////////////////////////////////////////////////////	
 	private boolean bluetoothEnabled;
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -44,58 +48,50 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	 * intensive, it may be best to switch to a
 	 * {@link android.support.v4.app.FragmentStatePagerAdapter}.
 	 */
-	SectionsPagerAdapter mSectionsPagerAdapter;
+	
+	private ViewPager mViewPager;//El ViewPager contindrà el contingut de les seccions. ViewPager es un tipus de layout que permet
+                         // desplasarnos entre pantalles(tambe anomenades pagines o seccions) lliscant el dit horitzontalment. Al viewpager
+	                     // se li ha de configurar un pagerAdapter que s'encarrega de crear les pagines que es mostraràn.
+	                     // Normalment les pagines del viewpager son fragments i es fa servir un adapter que tracta
+	                     // les pagines com a fragments anomenat FragmentPageAdapter.
+	
+	private SectionsPagerAdapter mSectionsPagerAdapter; //FragmentPageAdapter que gestiona la creacio de fragments(pagines) per al viewpager.
 
-	ViewPager mViewPager;//El ViewPager contindrà el contingut de les seccions.
-
-	BluetoothAdapter mBluetoothAdapter;//Adapter del Bluetooth
+	private BluetoothAdapter mBluetoothAdapter;//Adapter del Bluetooth
 	
-	ArrayAdapter<String> myArrayAdapter;//TODO Implementar la llista de dispositius BT i la UI
+	private ArrayAdapter<String> myArrayAdapter;//TODO Implementar la llista de dispositius BT i la UI
 	
-	int mStackLevel = 0;
+	private int mStackLevel = 0;
+	
+	private ActionBar actionBar;
 	
 	
+	/////// Metodes /////////////////////////////////////////////////////////////////////////////////	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		// Posa en marxa l'ActionBar
-		final ActionBar actionBar = getActionBar();
-		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);//Crea les TABS
-		
-		// Crea l'adapter que retornarà un fragment per cada una de les 3 
-		// seccions primaries de l'app.
+		//inicialitzacions de variables
+		actionBar = getActionBar();
+		mViewPager = (ViewPager) findViewById(R.id.pager); //obtenim el viewpager del arxiu de layout xml de aquesta activity
 		mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager(), this);
-
-		// Posar el ViewPager amb les seccions de l'adapter.
-		mViewPager = (ViewPager) findViewById(R.id.pager);
-		mViewPager.setAdapter(mSectionsPagerAdapter);
-
-		// Quan fem swipe entre diferents seccions, seleccionem la corresponent 
-		// tab.
-		mViewPager.setOnPageChangeListener(
-				new ViewPager.SimpleOnPageChangeListener() {
-					@Override
-					public void onPageSelected(int position) {
-						actionBar.setSelectedNavigationItem(position);
-					}
-				});
-
-		// Per a cada una de les seccions de l'aplicació, s'afegeix un tab a l'action bar.
-		for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-			// Crea un tab amb el text corresponent al titol definit per l'adapter.
-			// També especifica el TabListener per quan el Tab es seleccionat.
-			actionBar.addTab(actionBar.newTab()
-					.setText(mSectionsPagerAdapter.getPageTitle(i))
-					.setTabListener(this));
-		}
+					
+		configureActionBar();
+		configureViewPager();
+		
 		//myArrayAdapter = new ArrayAdapter<String>();
 		
 		setUpBluetooth();		
 		findRemoteDevices();
 		setBTDialogFragment();
 	}
+	
+	@Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //this.unregisterReceiver(mReceiver);
+    }
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -110,13 +106,66 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 	    }
 	   
 	}
-	
+		
+	/**
+	 * ActionBar - Menu
+	 */
 	@Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //this.unregisterReceiver(mReceiver);
-    }
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Infla el menu. Això afegeix items a l'action bar.
+		getMenuInflater().inflate(R.menu.activity_main, menu); //R.menu.activity_main --> /res/menu/activity_main.xml
+		return true;
+	}
 	
+	
+	
+	private void configureActionBar() {
+		
+		actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);//Volem que al action bar es mostrin les tabs
+	   
+		ActionBar.TabListener tabListener = new ActionBar.TabListener() {
+	        public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+	    		// Quan la tab es seleccionada, canviem de secció al ViewPager.
+	    		mViewPager.setCurrentItem(tab.getPosition());	        		        	
+	        }
+
+	        public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+	        	
+	        }
+
+	        public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+	        	
+	        }
+	    };		
+	    
+		// Per a cada una de les seccions de l'aplicació, s'afegeix un tab a l'action bar.
+		for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
+			// Crea un tab amb el text corresponent al titol definit per l'adapter.
+			// També especifica el TabListener per quan el Tab es seleccionat.
+			actionBar.addTab(actionBar.newTab()
+					.setText(mSectionsPagerAdapter.getPageTitle(i))
+					//.setTabListener(this));
+					.setTabListener(tabListener));
+		}
+	}
+	
+	private void configureViewPager() {
+		
+		// Posar el ViewPager amb les seccions de l'adapter.
+		mViewPager.setAdapter(mSectionsPagerAdapter); //li configurem el adapter al viewpager
+
+		// Quan fem swipe entre diferents seccions, seleccionem la corresponent 
+		// tab.
+		mViewPager.setOnPageChangeListener(
+				new ViewPager.SimpleOnPageChangeListener() {
+					@Override
+					public void onPageSelected(int position) {
+						actionBar.setSelectedNavigationItem(position);
+					}
+				});		
+	}
+
+	//*****************************BLUETOOTH**************************************************
 	private void setUpBluetooth() {
 		//1r Revisar que el dispositiu te Bluetooth
 		bluetoothEnabled = false;
@@ -195,34 +244,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 		newFragment.show(ft, "dialog");
 	}
 	
-	/**
-	 * ActionBar - Menu
-	 */
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Infla el menu. Això afegeix items a l'action bar.
-		getMenuInflater().inflate(R.menu.activity_main, menu); //R.menu.activity_main --> /res/menu/activity_main.xml
-		return true;
-	}
-
-	/**
-	 * ActionBar - Tab
-	 */
-	@Override
-	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-		// Quan la tab es seleccionada, canviem de secció al ViewPager.
-		mViewPager.setCurrentItem(tab.getPosition());
-	}
-
-	@Override
-	public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-	}
-
-	@Override
-	public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-	}
-	
-//*****************************BLUETOOTH**************************************************
 	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
