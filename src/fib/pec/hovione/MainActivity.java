@@ -3,6 +3,7 @@ package fib.pec.hovione;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.UUID;
 
@@ -24,6 +25,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,6 +33,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {
@@ -59,11 +64,13 @@ public class MainActivity extends FragmentActivity {
 
 	private BluetoothAdapter mBluetoothAdapter;//Adapter del Bluetooth
 	
-	private ArrayAdapter<String> myArrayAdapter;//TODO Implementar la llista de dispositius BT i la UI
+	private ArrayList<String> foundDevicesList;//TODO Implementar la llista de dispositius BT i la UI
 	
 	private int mStackLevel = 0;
 	
 	private ActionBar actionBar;
+	
+	private BluetoothManager bluetoothManager;
 	
 	
 	/////// Metodes /////////////////////////////////////////////////////////////////////////////////	
@@ -80,11 +87,34 @@ public class MainActivity extends FragmentActivity {
 		configureActionBar();
 		configureViewPager();
 		
-		//myArrayAdapter = new ArrayAdapter<String>();
+		bluetoothManager = new BluetoothManager(this);
 		
-		setUpBluetooth();		
-		findRemoteDevices();
-		setBTDialogFragment();
+		foundDevicesList = new ArrayList<String>();
+		
+		if (bluetoothManager.isBluetoothSupported()) {
+			if (bluetoothManager.isBluetoothEnabled()) {
+				Set<BluetoothDevice> pairedDevices = bluetoothManager.getPairedDevices();
+				if (pairedDevices.size() > 0) {
+			        for (BluetoothDevice device : pairedDevices) {
+			            // Add the name and address to an array adapter to show in a ListView
+			            foundDevicesList.add(device.getName() + "\n" + device.getAddress());
+			        }
+			    }
+				showBTDialogFragment();
+			}
+			else {
+				AlertDialogFragment dialogBtNoEnabled = AlertDialogFragment.newInstance(R.string.title_bluetooth_enable_petition,
+                                                                                        "El bluetooth està desconnectat,\n" +
+                                                                                        "vols que l'aplicació l'engegui per a tu?");
+                dialogBtNoEnabled.show(getSupportFragmentManager(), "BtNoEnabled");
+                
+			}
+		}
+		else {
+			AlertDialogFragment dialogNoBtSupport = AlertDialogFragment.newInstance(R.string.title_warning, "Bluetooth No Soportat");
+			dialogNoBtSupport.show(getSupportFragmentManager(), "BtNoSupported");			
+		}
+		
 	}
 	
 	@Override
@@ -98,11 +128,20 @@ public class MainActivity extends FragmentActivity {
 	    super.onActivityResult(requestCode, resultCode, data);
 	    
 	    if (requestCode == REQUEST_ENABLE_BT) {
-	    	if (resultCode == RESULT_OK) bluetoothEnabled = true;
-	    	else bluetoothEnabled = false;
-	    }
-	    if (data.getAction().equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-	    	//no se si s'ha de posar aquesta funcio
+	    	if (resultCode == RESULT_OK) {
+				Set<BluetoothDevice> pairedDevices = bluetoothManager.getPairedDevices();
+				if (pairedDevices.size() > 0) {
+			        for (BluetoothDevice device : pairedDevices) {
+			            // Add the name and address to an array adapter to show in a ListView
+			            foundDevicesList.add(device.getName() + "\n" + device.getAddress());
+			        }
+			    }
+				showBTDialogFragment();
+	    	}
+	    	else {
+				AlertDialogFragment dialogNoBtSupport = AlertDialogFragment.newInstance(R.string.title_warning, "No s'ha pogut engegar el bluetooth");
+				dialogNoBtSupport.show(getSupportFragmentManager(), "BtCouldntEnable");	
+	    	}
 	    }
 	   
 	}
@@ -164,85 +203,12 @@ public class MainActivity extends FragmentActivity {
 					}
 				});		
 	}
+	
+	public void close_application() {
+		finish();
+	}
 
 	//*****************************BLUETOOTH**************************************************
-	private void setUpBluetooth() {
-		//1r Revisar que el dispositiu te Bluetooth
-		bluetoothEnabled = false;
-		mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-		if (mBluetoothAdapter != null) { //el dispositiu soporta bluetooth
-			//Engegar el Bluetooth
-			if (!mBluetoothAdapter.isEnabled()) {
-				Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-				startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-			}
-			else {
-				//El Bluetooth ja estava activat
-				bluetoothEnabled = true;
-			}		
-		}
-		else {
-			//El dispositiu no suporta Bluetooth. Mostrar un missatge!
-			//TODO Mostrar un missatge per pantalla dient que no suporta BT. Usar FragmentAlertDialog !!			
-			
-		}
-	}
-	
-	
-	private void findRemoteDevices() {
-		if (bluetoothEnabled) {
-			//Tenim el BT activat, procedim a buscar dispositius
-			
-			//1r Busquem entre la llista d'emparellats
-			Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
-			if (pairedDevices.size() > 0) {
-				for (BluetoothDevice device : pairedDevices) {
-					//Aqui mostrar una llista dels BT emparellats per no haver de buscar-los
-					myArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-				}
-			}
-			
-			//TODO Completar aquesta secció de Bluetooth perque segur que esta malament...
-			//2n Descobrim dispositius	
-			mBluetoothAdapter.startDiscovery();
-			// Registrar el BroadcastReciver
-			IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-			registerReceiver(mReceiver, filter); //des-registrar al onDestroy
-			
-			// Register for broadcasts when discovery has finished
-	        filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-	        registerReceiver(mReceiver, filter);
-			
-			/**
-			 Notice that cancelDiscovery() is called before the connection is made. You should always do this before 
-			 connecting and it is safe to call without actually checking whether it is running or not 
-			 (but if you do want to check, call isDiscovering())
-			 */
-			mBluetoothAdapter.cancelDiscovery(); //?¿?¿?¿
-			
-			//TODO Revisar que funcioni aixi
-			//AcceptThread thread = new AcceptThread();
-			//thread.run();
-		}
-		else {
-			//El BT no s'ha activat degut a un error (o l'usuari ha respos 'no')
-			//TODO Completar la UI de forma que al no tenir el BT activat, no es pot fer res. (o el minim)
-			
-		}
-	}
-	
-	public void setBTDialogFragment() {
-		++mStackLevel;
-		android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-		Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
-		if (prev != null) {
-			ft.remove(prev);
-		}
-		ft.addToBackStack(null);
-		
-		DialogFragment newFragment = BTDialogFragment.newInstance(mStackLevel);
-		newFragment.show(ft, "dialog");
-	}
 	
 	private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
 		public void onReceive(Context context, Intent intent) {
@@ -253,7 +219,9 @@ public class MainActivity extends FragmentActivity {
 				BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 				if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
 					// Agafa el nom i l'addreça i el posa en un array adapter per mostrar-lo en un ListView
-					myArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+					foundDevicesList.add(device.getName() + "\n" + device.getAddress());
+					android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("bluetooth_list_fragment");
+					((BTDialogFragment) prev).notifyListHasToUpdate();
 				}
 			} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 //Aturar la progress bar
@@ -262,110 +230,32 @@ public class MainActivity extends FragmentActivity {
 		}
 	};
 	
-	private class AcceptThread extends Thread {
-		private final UUID 	 MY_UUID = new UUID(0, 0);
-		private final String NAME = "HOVI-ONE-Android";
-		private final BluetoothServerSocket mmServerSocket;
-		
-		public AcceptThread() {
-			BluetoothServerSocket tmp = null;
-			try {
-				tmp = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(NAME, MY_UUID);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			mmServerSocket = tmp;
-		}
-		
-		public void run() {
-			BluetoothSocket socket = null;
-			// Continua escoltant fins que passa una excepció o es retorna un socket
-			while (true) {
-				try {
-					socket = mmServerSocket.accept();
-				} catch (IOException e) {
-					e.printStackTrace();
-					break;
-				}
-				// Si s'accepta una connexió
-				if (socket != null) {
-					//fer feina per manejar la connexió en un altre thread :D
-					ConnectedThread thread = new ConnectedThread(socket);
-					thread.run();
-					
-					try {
-						mmServerSocket.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					break;
-				}
-			}
-		}
-		
-		/**
-		 * Cancelarà el socket, i causarà el final del thread
-		 */
-		public void cancel() {
-			try {
-				mmServerSocket.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+	public void beginDiscovery() {
+		bluetoothManager.performDiscovery();
 	}
 	
-	private class ConnectedThread extends Thread {
-		private final BluetoothSocket mmSocket;
-		private final InputStream mmInStream;
-		private final OutputStream mmOutStream;
+	public BroadcastReceiver getDiscoveryReceiver() {
+		return mReceiver;
+	}
+	
+	public ArrayList<String> getFoundDevices() {
+		return foundDevicesList;
+	}
+	public void pressed_Ok_EnableBluetooth() {
+		Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+		startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);		
+	}
+	
+	public void showBTDialogFragment() {
+		++mStackLevel;
+		android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+		Fragment prev = getSupportFragmentManager().findFragmentByTag("bluetooth_list_fragment");
+		if (prev != null) {
+			ft.remove(prev);
+		}
+		ft.addToBackStack(null);
 		
-		public ConnectedThread(BluetoothSocket socket) {
-			mmSocket = socket;
-			InputStream tmpIn = null;
-			OutputStream tmpOut = null;
-			
-			try {
-				tmpIn = socket.getInputStream();
-				tmpOut = socket.getOutputStream();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			mmInStream = tmpIn;
-			mmOutStream = tmpOut;
-		}
-		
-		public void run() {
-			byte[] buffer = new byte[1024]; //buffer per guardar el stream
-			int bytes; //num bytes retornats pel read();
-			
-			// Es manté escoltant el stream fins que una excepcio passa
-			while (true) {
-				try {
-					//Llegeix del InputStream
-					bytes = mmInStream.read(buffer);
-					// Envia els bytes obtinguts a la UI Activity
-					
-				} catch (IOException e) {
-					break;
-				}
-			}
-		}
-		
-		public void write(byte[] bytes) {
-			try {
-				mmOutStream.write(bytes);
-			} catch (IOException e) { }
-		}
-		/**
-		 * Cancelarà el socket, i causarà el final del thread
-		 */
-		public void cancel() {
-			try {
-				mmSocket.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
+		BTDialogFragment deviceListFragment = BTDialogFragment.newInstance(mStackLevel);
+		deviceListFragment.show(ft, "bluetooth_list_fragment");
 	}
 }
