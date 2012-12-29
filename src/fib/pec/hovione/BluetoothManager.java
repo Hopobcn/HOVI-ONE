@@ -53,10 +53,10 @@ public class BluetoothManager {
 		// Register for broadcasts when discovery has finished
         filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         ((MainActivity) act).registerReceiver(mReceiver, filter);
-        
-        
-        
-        
 	}
+        
+   public void endDiscovery() {
+	   localBluetooth.cancelDiscovery();
+   }
 	
 }

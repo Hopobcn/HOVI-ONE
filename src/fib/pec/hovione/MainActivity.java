@@ -121,6 +121,7 @@ public class MainActivity extends FragmentActivity {
     protected void onDestroy() {
         super.onDestroy();
         //this.unregisterReceiver(mReceiver);
+        bluetoothManager.endDiscovery();
     }
 	
 	@Override
