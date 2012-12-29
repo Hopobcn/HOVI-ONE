@@ -243,8 +243,7 @@ public class MainActivity extends FragmentActivity {
 		return foundDevicesList;
 	}
 	public void pressed_Ok_EnableBluetooth() {
-		Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-		startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);		
+		bluetoothManager.enableBluetooth();	
 	}
 	
 	public void showBTDialogFragment() {
