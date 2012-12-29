@@ -20,8 +20,9 @@ public class BluetoothManager {
 	private FragmentActivity act;
 	
 	
-	public BluetoothManager(FragmentActivity act) {
+	public BluetoothManager(FragmentActivity activ) {
 	    localBluetooth = BluetoothAdapter.getDefaultAdapter();
+	    act = activ;
 	}
 	
 	public boolean isBluetoothSupported() {
@@ -46,6 +47,7 @@ public class BluetoothManager {
 		if (localBluetooth.isDiscovering()) localBluetooth.cancelDiscovery();
 		localBluetooth.startDiscovery();
 		BroadcastReceiver mReceiver = ((MainActivity) act).getDiscoveryReceiver();
+		
 		
 		IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
 		((MainActivity) act).registerReceiver(mReceiver, filter); //des-registrar al onDestroy
