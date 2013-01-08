@@ -72,6 +72,24 @@ public class BTDialogFragment extends DialogFragment {
 			}
 			
 		});
+		
+		llistaBtLayout.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				String selectedItem = (String) llistaBtLayout.getItemAtPosition(arg2);
+				String f[] = selectedItem.split("\n");
+				String macaddr = null;
+				if (f[1] != null) {
+					macaddr = f[1];
+					
+				}
+			}
+			
+		});
+		
+		
 	}
 
 }

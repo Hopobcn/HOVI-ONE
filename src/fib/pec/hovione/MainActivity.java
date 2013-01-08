@@ -44,7 +44,7 @@ public class MainActivity extends FragmentActivity {
 	private static final int REQUEST_ENABLE_BT = 1; //constant per identificar peticio de engegar bluetooth
 	
 	/////// Atributs De La Classe /////////////////////////////////////////////////////////////////////////////////	
-	private boolean bluetoothEnabled;
+	//	private boolean bluetoothEnabled;
 	/**
 	 * The {@link android.support.v4.view.PagerAdapter} that will provide
 	 * fragments for each of the sections. We use a
@@ -103,10 +103,11 @@ public class MainActivity extends FragmentActivity {
 				showBTDialogFragment();
 			}
 			else {
-				AlertDialogFragment dialogBtNoEnabled = AlertDialogFragment.newInstance(R.string.title_bluetooth_enable_petition,
+				/*AlertDialogFragment dialogBtNoEnabled = AlertDialogFragment.newInstance(R.string.title_bluetooth_enable_petition,
                                                                                         "El bluetooth està desconnectat,\n" +
                                                                                         "vols que l'aplicació l'engegui per a tu?");
-                dialogBtNoEnabled.show(getSupportFragmentManager(), "BtNoEnabled");
+                dialogBtNoEnabled.show(getSupportFragmentManager(), "BtNoEnabled");*/
+				bluetoothManager.enableBluetooth();
                 
 			}
 		}
@@ -226,6 +227,9 @@ public class MainActivity extends FragmentActivity {
 				}
 			} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 //Aturar la progress bar
+				foundDevicesList.add("Fi de discovery");
+				android.support.v4.app.Fragment prev = getSupportFragmentManager().findFragmentByTag("bluetooth_list_fragment");
+				((BTDialogFragment) prev).notifyListHasToUpdate();				   
                 
             }			
 		}
@@ -245,6 +249,7 @@ public class MainActivity extends FragmentActivity {
 	public void pressed_Ok_EnableBluetooth() {
 		bluetoothManager.enableBluetooth();	
 	}
+	
 	
 	public void showBTDialogFragment() {
 		++mStackLevel;

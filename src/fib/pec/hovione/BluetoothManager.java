@@ -45,7 +45,7 @@ public class BluetoothManager {
 	public void performDiscovery() {
 		// Registrar el BroadcastReciver
 		if (localBluetooth.isDiscovering()) localBluetooth.cancelDiscovery();
-		localBluetooth.startDiscovery();
+		//localBluetooth.startDiscovery();
 		BroadcastReceiver mReceiver = ((MainActivity) act).getDiscoveryReceiver();
 		
 		
@@ -55,6 +55,8 @@ public class BluetoothManager {
 		// Register for broadcasts when discovery has finished
         filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         ((MainActivity) act).registerReceiver(mReceiver, filter);
+        
+        localBluetooth.startDiscovery();
 	}
         
    public void endDiscovery() {
