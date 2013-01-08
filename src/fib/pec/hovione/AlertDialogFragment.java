@@ -53,6 +53,15 @@ public class AlertDialogFragment extends DialogFragment { //s'usa DialogFragment
 						}
 					 });
 		}
+		else if (title == R.string.title_successful_con) {
+			adb = adb.setPositiveButton(R.string.button_ok,
+		              new DialogInterface.OnClickListener() {										
+						@Override
+						public void onClick(DialogInterface dialog, int which) {							
+							((MainActivity)getActivity()).notShowBTDialogFragment();							
+						}
+					 });
+		}
 			    
 	    return adb.create();
 	    			   

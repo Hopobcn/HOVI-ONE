@@ -1,8 +1,17 @@
 package fib.pec.hovione;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.security.auth.callback.Callback;
+
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.ParcelUuid;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +29,12 @@ public class BTDialogFragment extends DialogFragment {
 	private ArrayAdapter<String> llistaBtAdapter;
 	private ListView	llistaBtLayout;
 	private Button discoverButton;
-
+	private BluetoothDevice remoteDevice;
+	private BluetoothSocket socket;
+	
+	
+	
+	
 	public static BTDialogFragment newInstance(int mStackLevel) {
 		// TODO Auto-generated method stub
 		BTDialogFragment f = new BTDialogFragment();
@@ -30,18 +44,6 @@ public class BTDialogFragment extends DialogFragment {
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		//getDialog().setTitle("BT");
-		/*View view = inflater.inflate(R.layout.btlistdialog, container);
-		TextView tmp = (TextView) view.findViewById(R.id.tvProva1);
-		tmp.setText("Titol");
-		
-		llistaBt = new ArrayList<String>();
-		llistaBt.clear();
-		llistaBt.add(0, "Prova");
-		llistaBtAdapter = new ArrayAdapter<String> (this.getActivity(), android.R.layout.simple_list_item_1, llistaBt);
-		llistaBtLayout = (ListView) view.findViewById(R.id.listView1);
-		llistaBtLayout.setAdapter(llistaBtAdapter);*/
-		
 		
 		View view = inflater.inflate(R.layout.btlistdialog, container);
 		TextView tmp = (TextView) view.findViewById(R.id.tvProva1);
@@ -83,14 +85,17 @@ public class BTDialogFragment extends DialogFragment {
 				String macaddr = null;
 				if (f[1] != null) {
 					macaddr = f[1];
-					
+					BluetoothAdapter btAdapter = BluetoothAdapter.getDefaultAdapter();
+					try {
+						remoteDevice = btAdapter.getRemoteDevice(macaddr);						
+					} catch (IllegalArgumentException e) {
+						e.printStackTrace();
+					}
+					((MainActivity)getActivity()).crearThreadConnexio(remoteDevice); 
 				}
 			}
 			
-		});
-		
-		
+		});		
 	}
-
 }
 

@@ -18,6 +18,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -72,7 +74,16 @@ public class MainActivity extends FragmentActivity {
 	
 	private BluetoothManager bluetoothManager;
 	
-	
+	final Handler mHandler = new Handler(new Handler.Callback() {
+		@Override
+		public boolean handleMessage(Message msg) {
+			AlertDialogFragment dialogNoBtSupport = AlertDialogFragment.newInstance(R.string.title_successful_con, "Titol");
+			dialogNoBtSupport.show(getSupportFragmentManager(), "BtConSucc");	
+			
+			mHandler.removeMessages(0);
+			return false;
+		}
+	});
 	/////// Metodes /////////////////////////////////////////////////////////////////////////////////	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -219,6 +230,7 @@ public class MainActivity extends FragmentActivity {
 			if (BluetoothDevice.ACTION_FOUND.equals(action)) {
 				// Agafa l'objecte BluetoothDevice del Intent
 				BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+				
 				if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
 					// Agafa el nom i l'addreça i el posa en un array adapter per mostrar-lo en un ListView
 					foundDevicesList.add(device.getName() + "\n" + device.getAddress());
@@ -259,8 +271,24 @@ public class MainActivity extends FragmentActivity {
 			ft.remove(prev);
 		}
 		ft.addToBackStack(null);
+		ft.commit();//no segur
 		
 		BTDialogFragment deviceListFragment = BTDialogFragment.newInstance(mStackLevel);
 		deviceListFragment.show(ft, "bluetooth_list_fragment");
+	}
+	
+	public void notShowBTDialogFragment() {
+		--mStackLevel;
+		android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();		
+		Fragment prev = getSupportFragmentManager().findFragmentByTag("bluetooth_list_fragment");
+		if (prev != null) {
+			ft.remove(prev);
+			getSupportFragmentManager().popBackStack();//no sabem l'ordre
+			ft.commit();
+		}		
+	}
+	
+	public void crearThreadConnexio(BluetoothDevice remoteDevice) {
+		new BTClientThread(remoteDevice, mHandler).run();
 	}
 }
