@@ -77,8 +77,8 @@ public class MainActivity extends FragmentActivity {
 	final Handler mHandler = new Handler(new Handler.Callback() {
 		@Override
 		public boolean handleMessage(Message msg) {
-			AlertDialogFragment dialogNoBtSupport = AlertDialogFragment.newInstance(R.string.title_successful_con, "Titol");
-			dialogNoBtSupport.show(getSupportFragmentManager(), "BtConSucc");	
+			AlertDialogFragment dialogSuccConnected = AlertDialogFragment.newInstance(R.string.title_successful_con, "Titol");
+			dialogSuccConnected.show(getSupportFragmentManager(), "BtConSucc");	
 			
 			mHandler.removeMessages(0);
 			return false;
@@ -270,8 +270,11 @@ public class MainActivity extends FragmentActivity {
 		if (prev != null) {
 			ft.remove(prev);
 		}
+		
+		//ft.commit();//no segur
 		ft.addToBackStack(null);
-		ft.commit();//no segur
+		
+		
 		
 		BTDialogFragment deviceListFragment = BTDialogFragment.newInstance(mStackLevel);
 		deviceListFragment.show(ft, "bluetooth_list_fragment");
