@@ -34,6 +34,7 @@ public class BTClientThread extends Thread {
 		}
 		socket = tmp;
 	}
+	
 	public void run() {
 		btAdapter = BluetoothAdapter.getDefaultAdapter();
 		btAdapter.cancelDiscovery();
@@ -48,13 +49,17 @@ public class BTClientThread extends Thread {
 			}
 			e.printStackTrace();
 		}
-		
 		Message msg = localH.obtainMessage(0,"APSEOFIAWEF");
 		localH.sendMessage(msg);
 	}
+	
 	public void cancel() {
 		try {
             socket.close();
         } catch (IOException e) { }
+	}
+	
+	public BluetoothSocket returnSocket() {
+		return socket;
 	}
 }

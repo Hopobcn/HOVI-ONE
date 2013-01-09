@@ -292,6 +292,12 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public void crearThreadConnexio(BluetoothDevice remoteDevice) {
-		new BTClientThread(remoteDevice, mHandler).run();
+		BTClientThread Conthread = new BTClientThread(remoteDevice, mHandler);
+		Conthread.run();
+		new BTManagingConThread(Conthread.returnSocket()).run();
 	}
+	
+	/*public void crearThreadManagement(BluetoothSocket socket) {
+		new BTManagingConThread(socket).run();		
+	}*/
 }
