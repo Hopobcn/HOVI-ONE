@@ -29,14 +29,21 @@ public class BTManagingConThread extends Thread {
 		byte[] buffer = new byte[1024];
 		int bytes;
 		
-		while (true) {
+		byte[] buffer2 = new byte[1];
+		buffer2[0] = 'A';
+		//buffer2[1] = '2';
+		this.write(buffer);
+		while (true){}
+		
+		/*while (true) {
 			try {
 				bytes = InStream.read(buffer);
 				//handler.obtainMessage etc...
+				System.out.println(bytes);
 			} catch (IOException e) {
 				break;
-			}
-		}
+			}			
+		}*/
 	}
 	
 	public void write(byte[] bytes) {

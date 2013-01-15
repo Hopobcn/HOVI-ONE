@@ -9,6 +9,7 @@
         android:targetSdkVersion="15" />
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <!-- <uses-permission android:name="android.permission.INTERNET"/>  intent per arreglar un error, NO es necessari-->
 
     <application
         android:allowBackup="true"
