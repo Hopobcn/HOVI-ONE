@@ -50,7 +50,7 @@ public class BTClientThread extends Thread {
 			}
 			e.printStackTrace();
 		}
-		Message msg = localH.obtainMessage(0,"APSEOFIAWEF");
+		Message msg = localH.obtainMessage(0,"SUCCESFUL_CON");
 		localH.sendMessage(msg);
 	}
 	

@@ -5,7 +5,12 @@ import android.support.v4.app.Fragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 public class DummySectionFragment extends Fragment {
@@ -23,10 +28,65 @@ public class DummySectionFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// Create a new TextView and set its text to the fragment's section
 		// number argument value.
-		TextView textView = new TextView(getActivity());
+		//View v = getActivity().findViewById(R.layout.home);
+		LinearLayout v = (LinearLayout) inflater.inflate(R.layout.home, container, false);
+		/*TextView textView = new TextView(getActivity());
 		textView.setGravity(Gravity.CENTER);
-		textView.setText(Integer.toString(getArguments().getInt(
-				ARG_SECTION_NUMBER)));
-		return textView;
+		textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));*/
+		
+		
+		Button a = (Button) v.findViewById(R.id.a);
+		a.setOnClickListener( new OnClickListener() {
+			public void onClick(View view) {
+				
+				((MainActivity) getActivity()).enviarStringBT("B");
+			}
+		});
+		
+		Button b = (Button) v.findViewById(R.id.b);
+		b.setOnClickListener( new OnClickListener() {
+			public void onClick(View view) {
+				
+				((MainActivity) getActivity()).enviarStringBT("C");
+			}
+		});
+		
+		SeekBar motor1 = (SeekBar) v.findViewById(R.id.motor1);
+		motor1.setOnSeekBarChangeListener( new OnSeekBarChangeListener() {
+
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				((MainActivity) getActivity()).enviarStringBT(Integer.valueOf(progress).toString());		}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				((MainActivity) getActivity()).enviarStringBT("B");		
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				
+			}
+		});
+		
+		SeekBar motor2 = (SeekBar) v.findViewById(R.id.motor2);
+		motor2.setOnSeekBarChangeListener( new OnSeekBarChangeListener() {
+
+			@Override
+			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+				((MainActivity) getActivity()).enviarStringBT(Integer.valueOf(progress).toString());		}
+
+			@Override
+			public void onStartTrackingTouch(SeekBar seekBar) {
+				((MainActivity) getActivity()).enviarStringBT("C");		
+			}
+
+			@Override
+			public void onStopTrackingTouch(SeekBar seekBar) {
+				
+			}
+		});
+		
+		return v;
 	}
 }

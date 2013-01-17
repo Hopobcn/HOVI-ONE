@@ -74,11 +74,21 @@ public class MainActivity extends FragmentActivity {
 	
 	private BluetoothManager bluetoothManager;
 	
+	private BTClientThread Conthread = null;
+	
+	private BTManagingConThread Manthread = null;
+	
 	final Handler mHandler = new Handler(new Handler.Callback() {
 		@Override
 		public boolean handleMessage(Message msg) {
-			AlertDialogFragment dialogSuccConnected = AlertDialogFragment.newInstance(R.string.title_successful_con, "Titol");
-			dialogSuccConnected.show(getSupportFragmentManager(), "BtConSucc");	
+			if (msg.what == 0) {
+				AlertDialogFragment dialogSuccConnected = AlertDialogFragment.newInstance(R.string.title_successful_con, "Titol");
+				dialogSuccConnected.show(getSupportFragmentManager(), "BtConSucc");	
+			} else {
+				String mym = (String) msg.obj;
+				TextView v = (TextView) findViewById(R.id.terminal);
+				v.setText(mym);
+			}
 			
 			mHandler.removeMessages(0);
 			return false;
@@ -292,12 +302,15 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public void crearThreadConnexio(BluetoothDevice remoteDevice) {
-		BTClientThread Conthread = new BTClientThread(remoteDevice, mHandler);
+		Conthread = new BTClientThread(remoteDevice, mHandler);
 		Conthread.start();
-		BTManagingConThread Manthread = new BTManagingConThread(Conthread.returnSocket());
+		Manthread = new BTManagingConThread(Conthread.returnSocket(), mHandler);
 		Manthread.start();		
 	}
 	
+	public void enviarStringBT(String s) {
+		Manthread.write(s.getBytes());
+	}
 	/*public void crearThreadManagement(BluetoothSocket socket) {
 		new BTManagingConThread(socket).run();		
 	}*/
