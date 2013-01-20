@@ -20,7 +20,7 @@ public class DummySectionFragment extends Fragment {
 	 * fragment.
 	 */
 	public static final String ARG_SECTION_NUMBER = "section_number";
-
+	
 	public DummySectionFragment() {
 	}
 
@@ -28,18 +28,25 @@ public class DummySectionFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// Create a new TextView and set its text to the fragment's section
 		// number argument value.
-		//View v = getActivity().findViewById(R.layout.home);
+		
 		LinearLayout v = (LinearLayout) inflater.inflate(R.layout.home, container, false);
-		/*TextView textView = new TextView(getActivity());
-		textView.setGravity(Gravity.CENTER);
-		textView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));*/
+		try {
+			TextView textView = (TextView) v.findViewById(R.id.terminal);
+			Bundle args = new Bundle();
+			args = this.getArguments();
+			int position = args.getInt(ARG_SECTION_NUMBER);
+			textView.setText(Integer.valueOf(position));
+		} catch(Exception e) {
+			System.out.println("PETA TextView");
+		}
+		
 		
 		
 		Button a = (Button) v.findViewById(R.id.a);
 		a.setOnClickListener( new OnClickListener() {
 			public void onClick(View view) {
 				
-				((MainActivity) getActivity()).enviarStringBT("B");
+				((MainActivity) getActivity()).enviarStringBT("A");
 			}
 		});
 		
@@ -50,13 +57,14 @@ public class DummySectionFragment extends Fragment {
 				((MainActivity) getActivity()).enviarStringBT("C");
 			}
 		});
-		
+
 		SeekBar motor1 = (SeekBar) v.findViewById(R.id.motor1);
 		motor1.setOnSeekBarChangeListener( new OnSeekBarChangeListener() {
 
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-				((MainActivity) getActivity()).enviarStringBT(Integer.valueOf(progress).toString());		}
+				((MainActivity) getActivity()).enviarStringBT(Integer.valueOf(progress).toString());		
+			}
 
 			@Override
 			public void onStartTrackingTouch(SeekBar seekBar) {
@@ -74,7 +82,8 @@ public class DummySectionFragment extends Fragment {
 
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-				((MainActivity) getActivity()).enviarStringBT(Integer.valueOf(progress).toString());		}
+				((MainActivity) getActivity()).enviarStringBT(Integer.valueOf(progress).toString());		
+			}
 
 			@Override
 			public void onStartTrackingTouch(SeekBar seekBar) {

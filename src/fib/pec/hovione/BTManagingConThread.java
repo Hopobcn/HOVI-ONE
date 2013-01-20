@@ -50,6 +50,7 @@ public class BTManagingConThread extends Thread {
 			try {									
 
 				if (socket.isConnected()) {
+					buffer = new byte[1024];
 					bytes = InStream.read(buffer);
 					String cosa = new String(buffer);
 					
@@ -72,6 +73,8 @@ public class BTManagingConThread extends Thread {
 		try {
 			if (socket.isConnected()) {
 				OutStream.write(bytes);
+
+				System.out.println("Enviats bytes " + bytes);
 			} else {
 				System.out.println("isConnected() == false -> No escriu");
 			}

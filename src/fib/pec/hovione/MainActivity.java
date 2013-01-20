@@ -87,7 +87,7 @@ public class MainActivity extends FragmentActivity {
 			} else {
 				String mym = (String) msg.obj;
 				TextView v = (TextView) findViewById(R.id.terminal);
-				v.setText(mym);
+				v.setText(v.getText()+mym);
 			}
 			
 			mHandler.removeMessages(0);
