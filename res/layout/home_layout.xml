@@ -1,0 +1,156 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/home"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <TextView 
+        android:id="@+id/slider_motor_fan"
+        android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingLeft="20dip"
+    	android:paddingRight="16dip"
+    	android:paddingTop="6dip"
+    	android:text="@string/text_motor_fan" />
+    
+	<View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="#000000"
+        android:layout_marginLeft="16dip"
+        android:layout_marginRight="16dip"
+        android:layout_marginTop="0dip"
+        android:layout_marginBottom="4dip"/>
+	
+    <SeekBar
+        android:id="@+id/motor_fan"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+    	android:paddingLeft="32dip"
+    	android:paddingRight="16dip"
+        android:max="100" />
+    
+	<View
+  		android:layout_width="fill_parent"
+  		android:layout_height="30dp">
+	</View>
+
+	
+	
+	<TextView 
+        android:id="@+id/slider_motor_propeller"
+        android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingLeft="20dip"
+    	android:paddingRight="16dip"
+    	android:paddingTop="6dip"
+    	android:text="@string/text_motor_propeller" />
+    
+	<View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="#000000"
+        android:layout_marginLeft="16dip"
+        android:layout_marginRight="16dip"
+        android:layout_marginTop="0dip"
+        android:layout_marginBottom="4dip"/>
+	
+    <SeekBar
+        android:id="@+id/motor_propeller"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+    	android:paddingLeft="32dip"
+    	android:paddingRight="16dip"
+        android:max="100" />
+    
+    <View
+  		android:layout_width="fill_parent"
+  		android:layout_height="30dp">
+	</View>
+	
+   
+    <TextView 
+        android:id="@+id/botons_direccio"
+        android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingLeft="20dip"
+    	android:paddingRight="16dip"
+    	android:paddingTop="6dip"
+    	android:text="@string/text_servo_direccio" />
+    
+	<View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="#000000"
+        android:layout_marginLeft="16dip"
+        android:layout_marginRight="16dip"
+        android:layout_marginTop="0dip"
+        android:layout_marginBottom="4dip"/>
+	
+	<LinearLayout 
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:orientation="horizontal"
+    	android:paddingLeft="16dip"
+        android:paddingRight="16dip" >
+	    
+		<Button
+        	android:id="@+id/button_esquerra"
+        	android:layout_width="0dp"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="1"
+    		android:paddingLeft="4dip"
+    		android:paddingRight="4dip"
+    		android:paddingTop="4dip"
+    		android:paddingBottom="4dip"
+        	android:text="@string/button_servo_left" />
+		
+		<Button
+        	android:id="@+id/button_dreta"
+        	android:layout_width="0dp"
+        	android:layout_height="wrap_content"
+        	android:layout_weight="1"
+    		android:paddingLeft="4dip"
+    		android:paddingRight="4dip"
+    		android:paddingTop="4dip"
+    		android:paddingBottom="4dip"
+        	android:text="@string/button_servo_right" />
+	    
+	</LinearLayout>
+	
+	<View
+  		android:layout_width="fill_parent"
+  		android:layout_height="30dp">
+	</View>
+	
+	<TextView 
+        android:id="@+id/text_switch_onOf"
+        android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:paddingLeft="20dip"
+    	android:paddingRight="16dip"
+    	android:paddingTop="6dip"
+    	android:text="@string/text_onOf" />
+    
+	<View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="#000000"
+        android:layout_marginLeft="16dip"
+        android:layout_marginRight="16dip"
+        android:layout_marginTop="0dip"
+        android:layout_marginBottom="4dip"/>
+
+	<Switch
+	    android:id="@+id/switch_onOf"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_gravity="center_horizontal"
+	    android:paddingBottom="4dip"
+	    android:paddingLeft="4dip"
+	    android:paddingRight="4dip"
+	    android:paddingTop="4dip"
+	    android:textOn="@string/sw_On"
+	    android:textOff="@string/sw_Off" />"
+
+</LinearLayout>

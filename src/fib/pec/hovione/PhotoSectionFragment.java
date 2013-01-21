@@ -29,71 +29,12 @@ public class PhotoSectionFragment extends Fragment {
 		// Create a new TextView and set its text to the fragment's section
 		// number argument value.
 		
-		LinearLayout v = (LinearLayout) inflater.inflate(R.layout.home, container, false);
-		try {
-			TextView textView = (TextView) v.findViewById(R.id.terminal);
-			Bundle args = new Bundle();
-			args = this.getArguments();
-			int position = args.getInt(ARG_SECTION_NUMBER);
-			textView.setText(Integer.valueOf(position));
-		} catch(Exception e) {
-			System.out.println("PETA TextView");
-		}
+		LinearLayout v = (LinearLayout) inflater.inflate(R.layout.photo_layout, container, false);
 		
-		
-		
-		Button a = (Button) v.findViewById(R.id.a);
-		a.setOnClickListener( new OnClickListener() {
+		Button ferFoto = (Button) v.findViewById(R.id.demanarFoto);
+		ferFoto.setOnClickListener( new OnClickListener() {
 			public void onClick(View view) {
-				
 				((MainActivity) getActivity()).enviarStringBT("A");
-			}
-		});
-		a.setVisibility(View.INVISIBLE);
-		
-		Button b = (Button) v.findViewById(R.id.b);
-		b.setOnClickListener( new OnClickListener() {
-			public void onClick(View view) {
-				
-				((MainActivity) getActivity()).enviarStringBT("C");
-			}
-		});
-
-		SeekBar motor1 = (SeekBar) v.findViewById(R.id.motor1);
-		motor1.setOnSeekBarChangeListener( new OnSeekBarChangeListener() {
-
-			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-				((MainActivity) getActivity()).enviarStringBT(Integer.valueOf(progress).toString());		
-			}
-
-			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {
-				((MainActivity) getActivity()).enviarStringBT("B");		
-			}
-
-			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {
-				
-			}
-		});
-		
-		SeekBar motor2 = (SeekBar) v.findViewById(R.id.motor2);
-		motor2.setOnSeekBarChangeListener( new OnSeekBarChangeListener() {
-
-			@Override
-			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-				((MainActivity) getActivity()).enviarStringBT(Integer.valueOf(progress).toString());		
-			}
-
-			@Override
-			public void onStartTrackingTouch(SeekBar seekBar) {
-				((MainActivity) getActivity()).enviarStringBT("C");		
-			}
-
-			@Override
-			public void onStopTrackingTouch(SeekBar seekBar) {
-				
 			}
 		});
 		

@@ -13,6 +13,15 @@
     <string name="button_yes">Sí</string>
     <string name="button_no">No</string>
     <string name="button_discover">Buscar Dispositius</string>
+    <string name="button_getPhoto">Fer foto</string>
+    <string name="button_servo_right">Dreta</string>
+    <string name="button_servo_left">Esquerra</string>
     <string name="title_successful_con">Connexió realitzada amb éxit</string>
-
+    <string name="img_contDesc_fotografia">Fotografia feta per el HOVI-ONE</string>
+	<string name="text_motor_fan">Motor d\'elevació</string>
+	<string name="text_motor_propeller">Motor de propulsió</string>	
+	<string name="text_servo_direccio">Controls de direcció</string>
+	<string name="text_onOf">Engegar / Parar</string>
+	<string name="sw_On">On</string>
+	<string name="sw_Off">Off</string>
 </resources>

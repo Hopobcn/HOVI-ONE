@@ -215,7 +215,7 @@ public class MainActivity extends FragmentActivity {
 		
 		// Posar el ViewPager amb les seccions de l'adapter.
 		mViewPager.setAdapter(mSectionsPagerAdapter); //li configurem el adapter al viewpager
-
+		
 		// Quan fem swipe entre diferents seccions, seleccionem la corresponent 
 		// tab.
 		mViewPager.setOnPageChangeListener(
@@ -224,7 +224,8 @@ public class MainActivity extends FragmentActivity {
 					public void onPageSelected(int position) {
 						actionBar.setSelectedNavigationItem(position);
 					}
-				});		
+				});	
+		mViewPager.setCurrentItem(1);
 	}
 	
 	public void close_application() {
@@ -311,7 +312,8 @@ public class MainActivity extends FragmentActivity {
 	public void enviarStringBT(String s) {
 		Manthread.write(s.getBytes());
 	}
-	/*public void crearThreadManagement(BluetoothSocket socket) {
-		new BTManagingConThread(socket).run();		
-	}*/
+	
+	public void enviarByteBT(byte[] b) {
+		Manthread.write(b);
+	}
 }
