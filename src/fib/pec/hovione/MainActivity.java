@@ -123,13 +123,8 @@ public class MainActivity extends FragmentActivity {
 			    }
 				showBTDialogFragment();
 			}
-			else {
-				/*AlertDialogFragment dialogBtNoEnabled = AlertDialogFragment.newInstance(R.string.title_bluetooth_enable_petition,
-                                                                                        "El bluetooth està desconnectat,\n" +
-                                                                                        "vols que l'aplicació l'engegui per a tu?");
-                dialogBtNoEnabled.show(getSupportFragmentManager(), "BtNoEnabled");*/
-				bluetoothManager.enableBluetooth();
-                
+			else {				
+				bluetoothManager.enableBluetooth();                
 			}
 		}
 		else {
@@ -137,6 +132,28 @@ public class MainActivity extends FragmentActivity {
 			dialogNoBtSupport.show(getSupportFragmentManager(), "BtNoSupported");			
 		}
 		
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+	  super.onSaveInstanceState(savedInstanceState);
+	  savedInstanceState.putInt("mStackLevel", mStackLevel);
+	}
+	
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+	  super.onRestoreInstanceState(savedInstanceState);
+	  mStackLevel = savedInstanceState.getInt("mStackLevel");
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
 	}
 	
 	@Override
@@ -275,20 +292,23 @@ public class MainActivity extends FragmentActivity {
 	
 	
 	public void showBTDialogFragment() {
-		++mStackLevel;
-		android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-		Fragment prev = getSupportFragmentManager().findFragmentByTag("bluetooth_list_fragment");
-		if (prev != null) {
-			ft.remove(prev);
+		if (mStackLevel == 0) {
+			++mStackLevel;
+			android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+			Fragment prev = getSupportFragmentManager().findFragmentByTag("bluetooth_list_fragment");
+			if (prev != null) {
+				ft.remove(prev);
+			}
+			
+			//ft.commit();//no segur
+			ft.addToBackStack(null);
+			
+			
+			
+			
+			BTDialogFragment deviceListFragment = BTDialogFragment.newInstance(mStackLevel);
+			deviceListFragment.show(ft, "bluetooth_list_fragment");
 		}
-		
-		//ft.commit();//no segur
-		ft.addToBackStack(null);
-		
-		
-		
-		BTDialogFragment deviceListFragment = BTDialogFragment.newInstance(mStackLevel);
-		deviceListFragment.show(ft, "bluetooth_list_fragment");
 	}
 	
 	public void notShowBTDialogFragment() {

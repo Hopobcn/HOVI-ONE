@@ -1,5 +1,7 @@
 package fib.pec.hovione;
 
+import java.util.Locale;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,7 +14,7 @@ import android.support.v4.app.FragmentPagerAdapter;
  */
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 	
-	public static final int NUM_PAGES = 3;
+	public static final int NUM_PAGES = 2;
 	
 	private Context appContext;
 
@@ -32,19 +34,19 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 			args.putInt(PhotoSectionFragment.ARG_SECTION_NUMBER, position + 1);
 			fragment.setArguments(args);
 			return fragment;
-		} else if (position == 1) {
+		} else /*if (position == 1)*/ {
 			Fragment fragment = new ControlSectionFragment();
 			Bundle args = new Bundle();
 			args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
 			fragment.setArguments(args);
 			return fragment;
-		} else  {
+		} /*else  {
 			Fragment fragment = new DummySectionFragment();
 			Bundle args = new Bundle();
 			args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
 			fragment.setArguments(args);
 			return fragment;
-		}
+		}*/
 		
 	}
 
@@ -58,11 +60,11 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 	public CharSequence getPageTitle(int position) {
 		switch (position) {
 		case 0:
-			return appContext.getString(R.string.title_section1).toUpperCase();
+			return appContext.getString(R.string.title_section1).toUpperCase(Locale.getDefault());
 		case 1:
-			return appContext.getString(R.string.title_section2).toUpperCase();
-		case 2:
-			return appContext.getString(R.string.title_section3).toUpperCase();
+			return appContext.getString(R.string.title_section2).toUpperCase(Locale.getDefault());
+		/*case 2:
+			return appContext.getString(R.string.title_section3).toUpperCase();*/
 		}
 		return null;
 	}
