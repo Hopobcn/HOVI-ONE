@@ -47,11 +47,10 @@ public class ControlSectionFragment extends Fragment {
 
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-				//((MainActivity) getActivity()).enviarStringBT("B");		
+				((MainActivity) getActivity()).enviarStringBT("B");		
 				byte[] valor = new byte[1];
 				valor[0] = Integer.valueOf(progress).byteValue();
-				//((MainActivity) getActivity()).enviarByteBT(valor);	
-				//System.out.println(valor[0]);
+				((MainActivity) getActivity()).enviarByteBT(valor);	
 				System.out.format("%x \n", valor[0]);
 			}
 
@@ -72,10 +71,10 @@ public class ControlSectionFragment extends Fragment {
 
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-				//((MainActivity) getActivity()).enviarStringBT("C");		
+				((MainActivity) getActivity()).enviarStringBT("C");		
 				byte[] valor = new byte[1];
 				valor[0] = Integer.valueOf(progress).byteValue();
-				//((MainActivity) getActivity()).enviarByteBT(valor);		
+				((MainActivity) getActivity()).enviarByteBT(valor);		
 				System.out.format("%x \n", valor[0]);
 			}
 
@@ -93,8 +92,8 @@ public class ControlSectionFragment extends Fragment {
 		button_esquerra.setEnabled(false);
 		button_esquerra.setOnClickListener( new OnClickListener() {
 			public void onClick(View view) {
-				//((MainActivity) getActivity()).enviarStringBT("D");
-				//((MainActivity) getActivity()).enviarStringBT("M");
+				((MainActivity) getActivity()).enviarStringBT("D");
+				((MainActivity) getActivity()).enviarStringBT("M");
 			}
 		});
 
@@ -102,8 +101,8 @@ public class ControlSectionFragment extends Fragment {
 		button_dreta.setEnabled(false);
 		button_dreta.setOnClickListener( new OnClickListener() {
 			public void onClick(View view) {
-				//((MainActivity) getActivity()).enviarStringBT("D");
-				//((MainActivity) getActivity()).enviarStringBT("L");
+				((MainActivity) getActivity()).enviarStringBT("D");
+				((MainActivity) getActivity()).enviarStringBT("L");
 			}
 		});
 		

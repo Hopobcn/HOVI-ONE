@@ -42,25 +42,30 @@ public class AlertDialogFragment extends DialogFragment { //s'usa DialogFragment
 												((MainActivity)getActivity()).close_application();												
 											}
 										});
-		}
-		
-		else if (title == R.string.title_warning) {
+		} else if (title == R.string.title_warning) {
 			adb = adb.setPositiveButton(R.string.button_ok,
-		              new DialogInterface.OnClickListener() {										
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							((MainActivity)getActivity()).close_application();
-						}
-					 });
-		}
-		else if (title == R.string.title_successful_con) {
+						                new DialogInterface.OnClickListener() {										
+											@Override
+											public void onClick(DialogInterface dialog, int which) {
+												((MainActivity)getActivity()).close_application();
+											}
+									 	});
+		} else if (title == R.string.title_successful_con) {
 			adb = adb.setPositiveButton(R.string.button_ok,
-		              new DialogInterface.OnClickListener() {										
-						@Override
-						public void onClick(DialogInterface dialog, int which) {							
-							((MainActivity)getActivity()).notShowBTDialogFragment();							
-						}
-					 });
+						                new DialogInterface.OnClickListener() {										
+											@Override
+											public void onClick(DialogInterface dialog, int which) {							
+												((MainActivity)getActivity()).notShowBTDialogFragment();							
+											}
+									    });
+		} else if (title == R.string.title_unsuccessful_con) {
+			adb = adb.setPositiveButton(R.string.button_ok,
+						                new DialogInterface.OnClickListener() {										
+											@Override
+											public void onClick(DialogInterface dialog, int which) {							
+												((MainActivity)getActivity()).close_application();							
+											}
+									    });
 		}
 			    
 	    return adb.create();

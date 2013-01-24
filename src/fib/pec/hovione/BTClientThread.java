@@ -1,6 +1,8 @@
 package fib.pec.hovione;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.UUID;
 
 import android.bluetooth.BluetoothAdapter;
@@ -16,21 +18,29 @@ public class BTClientThread extends Thread {
     private BluetoothAdapter btAdapter;
     private Handler localH;
     
-    private static final UUID MY_UUID_SECURE =  UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    //private static final UUID MY_UUID_SECURE =  UUID.fromString("12280fd3-f405-49f8-b26b-5a0b239627d4");
-    
+    //private static final UUID MY_UUID_SECURE =  UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+        
 	public BTClientThread(BluetoothDevice dev, Handler h) {
 		remoteDevice = dev;
 		BluetoothSocket tmp = null;
 		localH = h;
 		
-		ParcelUuid[] proba = remoteDevice.getUuids();
-		try {
-			//socket = remoteDevice.createRfcommSocketToServiceRecord(proba[0].getUuid()); 
-			tmp = remoteDevice.createRfcommSocketToServiceRecord(MY_UUID_SECURE);
-			
-			
-		} catch (IOException e) {
+		Method m;
+		try {			
+			//tmp = remoteDevice.createRfcommSocketToServiceRecord(MY_UUID_SECURE);
+			m = remoteDevice.getClass().getMethod("createRfcommSocket", new Class[] {int.class});
+			tmp = (BluetoothSocket) m.invoke(remoteDevice, 1);
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		socket = tmp;
@@ -42,6 +52,9 @@ public class BTClientThread extends Thread {
 		
 		try {
 			socket.connect();
+			
+			Message msg = localH.obtainMessage(0,"SUCCESFUL_CON");
+			localH.sendMessage(msg);
 		} catch (IOException e) {
 			try {
 				socket.close();
@@ -49,9 +62,9 @@ public class BTClientThread extends Thread {
 				ee.printStackTrace();
 			}
 			e.printStackTrace();
-		}
-		Message msg = localH.obtainMessage(0,"SUCCESFUL_CON");
-		localH.sendMessage(msg);
+			Message msg2 = localH.obtainMessage(2,"UNSUCCESFUL_CON");
+			localH.sendMessage(msg2);
+		}		
 	}
 	
 	public void cancel() {

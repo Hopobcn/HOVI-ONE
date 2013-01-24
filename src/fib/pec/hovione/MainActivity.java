@@ -17,6 +17,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -82,12 +84,16 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public boolean handleMessage(Message msg) {
 			if (msg.what == 0) {
-				AlertDialogFragment dialogSuccConnected = AlertDialogFragment.newInstance(R.string.title_successful_con, "Titol");
+				AlertDialogFragment dialogSuccConnected = AlertDialogFragment.newInstance(R.string.title_successful_con, getString(R.string.alert_text_successful_con));
 				dialogSuccConnected.show(getSupportFragmentManager(), "BtConSucc");	
-			} else {
-				String mym = (String) msg.obj;
-				TextView v = (TextView) findViewById(R.id.terminal);
-				v.setText(v.getText()+mym);
+			} else if (msg.what == 1) {
+				Bitmap mym = (Bitmap) msg.obj;
+				((PhotoSectionFragment)mSectionsPagerAdapter.getItem(0)).setImageBitmap(mym);
+				//mSectionsPagerAdapter.startUpdate((ViewPager) findViewById(R.id.pager)); 	
+				mSectionsPagerAdapter.notifyDataSetChanged();
+			} else if (msg.what == 2) {
+				AlertDialogFragment dialogSuccConnected = AlertDialogFragment.newInstance(R.string.title_unsuccessful_con, getString(R.string.alert_text_unsuccessful_con));
+				dialogSuccConnected.show(getSupportFragmentManager(), "BtConUnSucc");	
 			}
 			
 			mHandler.removeMessages(0);
@@ -99,6 +105,10 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		if (savedInstanceState != null) {
+			mStackLevel = savedInstanceState.getInt("mStackLevel");
+		}
 		
 		//inicialitzacions de variables
 		actionBar = getActionBar();
@@ -138,12 +148,6 @@ public class MainActivity extends FragmentActivity {
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 	  super.onSaveInstanceState(savedInstanceState);
 	  savedInstanceState.putInt("mStackLevel", mStackLevel);
-	}
-	
-	@Override
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
-	  super.onRestoreInstanceState(savedInstanceState);
-	  mStackLevel = savedInstanceState.getInt("mStackLevel");
 	}
 	
 	@Override
@@ -300,12 +304,8 @@ public class MainActivity extends FragmentActivity {
 				ft.remove(prev);
 			}
 			
-			//ft.commit();//no segur
 			ft.addToBackStack(null);
-			
-			
-			
-			
+						
 			BTDialogFragment deviceListFragment = BTDialogFragment.newInstance(mStackLevel);
 			deviceListFragment.show(ft, "bluetooth_list_fragment");
 		}
@@ -330,7 +330,11 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public void enviarStringBT(String s) {
-		Manthread.write(s.getBytes());
+		Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.cta);
+		
+		Message msg = mHandler.obtainMessage(1,bm);
+		mHandler.sendMessage(msg);
+		//Manthread.write(s.getBytes());
 	}
 	
 	public void enviarByteBT(byte[] b) {

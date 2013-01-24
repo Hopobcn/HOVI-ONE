@@ -7,12 +7,15 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 
 /**
  * FragmentPagerAdapter que retorna un fragment corresponent a 
  * una de les sections/tabs/pages.
  */
-public class SectionsPagerAdapter extends FragmentPagerAdapter {
+public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 	
 	public static final int NUM_PAGES = 2;
 	
@@ -49,6 +52,11 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 		}*/
 		
 	}
+	
+	@Override
+	public int getItemPosition(Object object) {
+		return POSITION_NONE;
+	}
 
 	@Override
 	public int getCount() {
@@ -67,5 +75,16 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 			return appContext.getString(R.string.title_section3).toUpperCase();*/
 		}
 		return null;
+	}
+	
+	public void destroyAndCreatePhoto() {
+		/*android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();	
+		Fragment prev = this.getItem(0);
+		if (prev != null) {
+			ft.remove(prev);
+			getSupportFragmentManager().popBackStack();//no sabem l'ordre
+			ft.commit();
+		}*/		
+		//completar...
 	}
 }
