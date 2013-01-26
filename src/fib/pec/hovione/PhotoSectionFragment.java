@@ -24,6 +24,7 @@ public class PhotoSectionFragment extends Fragment {
 	
 	private Bitmap imageBitmap = null;
 	private ImageView iv = null;
+	private Button ferFoto;
 	
 	public PhotoSectionFragment() {
 	}
@@ -32,7 +33,8 @@ public class PhotoSectionFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
 		LinearLayout v = (LinearLayout) inflater.inflate(R.layout.photo_layout, container, false);
 		
-		Button ferFoto = (Button) v.findViewById(R.id.demanarFoto);
+		ferFoto = (Button) v.findViewById(R.id.demanarFoto);
+		//ferFoto.setEnabled(false);
 		ferFoto.setOnClickListener( new OnClickListener() {
 			public void onClick(View view) {
 				((MainActivity) getActivity()).enviarStringBT("A");
@@ -50,5 +52,15 @@ public class PhotoSectionFragment extends Fragment {
 	
 	public void setImageBitmap(Bitmap auxBitmap) {		
 		imageBitmap = auxBitmap;
+	}
+	
+	public void activaDesactivaBoto(boolean on) {
+		if(ferFoto != null){
+			if (on) {
+				ferFoto.setEnabled(true);
+			} else {
+				//ferFoto.setEnabled(false);			
+			}
+		}
 	}
 }

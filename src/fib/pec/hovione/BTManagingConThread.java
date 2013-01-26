@@ -1,13 +1,17 @@
 package fib.pec.hovione;
 
+import java.io.File;
+import java.util.Random;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.Socket;
 
 import android.bluetooth.BluetoothSocket;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 
@@ -69,59 +73,46 @@ public class BTManagingConThread extends Thread {
 		}*/
 		
 		//boolean enviarPeticio = true;
-		String missatge = "";
+		
 	    while (true) {
+			String missatge = "";
+
 			try {									
 
 				if (socket.isConnected()) {
+					tamany = 0;
 					for (int i = 0; i < 4; ++i) {
 						tamany += InStream.read(tam,i,1);
-						//System.out.format("%x \n",tam[i]);
-						//System.out.println("es tamany " + tamany);
 					}
-					//if(tamany == 4) {
-						String aux = new String(tam);
-						num = Integer.parseInt(aux);
-						numE = ((num/250)+1)*30;
-						num = num*2 + numE;
-						buffer = new byte[num];
-						System.out.println("num + numE " + num + "numE" +numE);
+					String aux = new String(tam);
+					num = Integer.parseInt(aux);
+					numE = ((num/250)+1)*30;
+					num = num*2 + numE;
+					buffer = new byte[num];
+					//System.out.println("Num bytes: " + num);
 
-					//}
 					for(int i = 0; i < num; ++i) {
-						//tamany = InStream.read(buffer, i, 1);
-						System.out.println("la i del segon for" + i );
-						tamany = InStream.read(buffer, 0, 1);
-						//if(tamany != -1) {
-							missatge = missatge + new String(buffer,0,1);
-
-						//}
+						//tamany = InStream.read(buffer, 0, 1);
+						//missatge = missatge + new String(buffer,0,1);
+						 tamany = InStream.read(buffer,i,1);
 					}
+					missatge = new String(buffer);
+					//System.out.println(" Missatge " + missatge);
+					//System.out.println("\n es tamany " + tamany);
 					
-					System.out.println(" Missatge " + missatge);
-					System.out.println("es tamany " + tamany);
-					//int t = Integer.getInteger(tam.toString());
-					//int t = Integer.parseInt(tam.toString());
-					/*
-					buffer = new byte[1024];
-					bytes = InStream.read(buffer);*/
 					String str = missatge.replace(" ", "");
-					System.out.print(str);
 					
 					byte[] arrayOfValues = new byte[str.length()/2];
 					for (int i = 0; i < arrayOfValues.length; ++i){
 						arrayOfValues[i] = (byte) Integer.parseInt(str.substring(2*i, 2*i+2), 16);
 					}
-					
+					//guardarSD(arrayOfValues);
 					Bitmap bm = BitmapFactory.decodeByteArray(arrayOfValues, 0,arrayOfValues.length);
-					//byte array a buffered image
-					
+										
 					Message msg = localH.obtainMessage(1,bm);
-					localH.sendMessage(msg);
-					
-					//System.out.println(" tamany " + t);
+					localH.sendMessage(msg);					
 				} else {
-					System.out.println("isConnected() == false -> No llegeix");
+					//System.out.println("isConnected() == false -> No llegeix");
 				}
 				
 			} catch (IOException e) {
@@ -150,6 +141,38 @@ public class BTManagingConThread extends Thread {
 			socket.close();
 		} catch (IOException e) {
 			
+		}
+	}
+	private void guardarSD(byte[]bytes) {
+		File f = new File(Environment.getExternalStorageDirectory()
+          + File.separator + "test"+ new Random() +".jpg");
+		try {
+			f.createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//write the bytes in file
+		FileOutputStream fo = null;
+		try {
+			fo = new FileOutputStream(f);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		try {
+			fo.write(bytes);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		//remember close de FileOutput
+		try {
+			fo.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

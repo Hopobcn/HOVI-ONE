@@ -3,6 +3,7 @@ package fib.pec.hovione;
 import java.util.Locale;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,8 +20,10 @@ public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 	
 	public static final int NUM_PAGES = 2;
 	
+	private PhotoSectionFragment fragmentFoto = null;
 	private Context appContext;
-
+	private Bitmap imatgeB;
+	
 	public SectionsPagerAdapter(FragmentManager fm, Context con) {
 		super(fm);
 		appContext = con;
@@ -32,11 +35,16 @@ public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 		// Return a DummySectionFragment (defined as a static inner class
 		// below) with the page number as its lone argument.
 		if (position == 0) {
-			Fragment fragment = new PhotoSectionFragment();
-			Bundle args = new Bundle();
-			args.putInt(PhotoSectionFragment.ARG_SECTION_NUMBER, position + 1);
-			fragment.setArguments(args);
-			return fragment;
+			//PhotoSectionFragment fragment = new PhotoSectionFragment();
+			if(fragmentFoto == null) {
+				fragmentFoto = new PhotoSectionFragment();
+				Bundle args = new Bundle();
+				args.putInt(PhotoSectionFragment.ARG_SECTION_NUMBER, position + 1);
+				fragmentFoto.setArguments(args);
+			}
+			fragmentFoto.setImageBitmap(imatgeB);
+			
+			return fragmentFoto;
 		} else /*if (position == 1)*/ {
 			Fragment fragment = new ControlSectionFragment();
 			Bundle args = new Bundle();
@@ -77,14 +85,12 @@ public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
 		return null;
 	}
 	
-	public void destroyAndCreatePhoto() {
-		/*android.support.v4.app.FragmentTransaction ft = getSupportFragmentManager().beginTransaction();	
-		Fragment prev = this.getItem(0);
-		if (prev != null) {
-			ft.remove(prev);
-			getSupportFragmentManager().popBackStack();//no sabem l'ordre
-			ft.commit();
-		}*/		
-		//completar...
+	public void destroyAndCreatePhoto(Bitmap bitmap) {
+		imatgeB = bitmap;
+	}
+	
+	public void activaDesactivaBotoWraper(boolean on) {
+		PhotoSectionFragment fragm = (PhotoSectionFragment) getItem(0);
+		fragm.activaDesactivaBoto(on);
 	}
 }

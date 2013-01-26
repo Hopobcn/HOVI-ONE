@@ -1,46 +1,23 @@
 package fib.pec.hovione;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Set;
-import java.util.UUID;
 
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothServerSocket;
-import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {
 	
@@ -65,10 +42,8 @@ public class MainActivity extends FragmentActivity {
 	                     // les pagines com a fragments anomenat FragmentPageAdapter.
 	
 	private SectionsPagerAdapter mSectionsPagerAdapter; //FragmentPageAdapter que gestiona la creacio de fragments(pagines) per al viewpager.
-
-	private BluetoothAdapter mBluetoothAdapter;//Adapter del Bluetooth
 	
-	private ArrayList<String> foundDevicesList;//TODO Implementar la llista de dispositius BT i la UI
+	private ArrayList<String> foundDevicesList;
 	
 	private int mStackLevel = 0;
 	
@@ -76,9 +51,13 @@ public class MainActivity extends FragmentActivity {
 	
 	private BluetoothManager bluetoothManager;
 	
+	private BluetoothDevice mDeviceCon;
+	
 	private BTClientThread Conthread = null;
 	
 	private BTManagingConThread Manthread = null;
+	
+	private boolean primeraVegada;
 	
 	final Handler mHandler = new Handler(new Handler.Callback() {
 		@Override
@@ -87,10 +66,9 @@ public class MainActivity extends FragmentActivity {
 				AlertDialogFragment dialogSuccConnected = AlertDialogFragment.newInstance(R.string.title_successful_con, getString(R.string.alert_text_successful_con));
 				dialogSuccConnected.show(getSupportFragmentManager(), "BtConSucc");	
 			} else if (msg.what == 1) {
-				Bitmap mym = (Bitmap) msg.obj;
-				((PhotoSectionFragment)mSectionsPagerAdapter.getItem(0)).setImageBitmap(mym);
-				//mSectionsPagerAdapter.startUpdate((ViewPager) findViewById(R.id.pager)); 	
-				mSectionsPagerAdapter.notifyDataSetChanged();
+				Bitmap mym = (Bitmap) msg.obj;	
+				mSectionsPagerAdapter.destroyAndCreatePhoto(mym);
+				mSectionsPagerAdapter.notifyDataSetChanged();				
 			} else if (msg.what == 2) {
 				AlertDialogFragment dialogSuccConnected = AlertDialogFragment.newInstance(R.string.title_unsuccessful_con, getString(R.string.alert_text_unsuccessful_con));
 				dialogSuccConnected.show(getSupportFragmentManager(), "BtConUnSucc");	
@@ -105,9 +83,11 @@ public class MainActivity extends FragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		primeraVegada = true;
 		
 		if (savedInstanceState != null) {
 			mStackLevel = savedInstanceState.getInt("mStackLevel");
+			primeraVegada = savedInstanceState.getBoolean("primeraVegada");
 		}
 		
 		//inicialitzacions de variables
@@ -118,36 +98,46 @@ public class MainActivity extends FragmentActivity {
 		configureActionBar();
 		configureViewPager();
 		
-		bluetoothManager = new BluetoothManager(this);
+		mDeviceCon = (BluetoothDevice) getLastCustomNonConfigurationInstance();
 		
+		bluetoothManager = new BluetoothManager(this);
 		foundDevicesList = new ArrayList<String>();
 		
-		if (bluetoothManager.isBluetoothSupported()) {
-			if (bluetoothManager.isBluetoothEnabled()) {
-				Set<BluetoothDevice> pairedDevices = bluetoothManager.getPairedDevices();
-				if (pairedDevices.size() > 0) {
-			        for (BluetoothDevice device : pairedDevices) {
-			            // Add the name and address to an array adapter to show in a ListView
-			            foundDevicesList.add(device.getName() + "\n" + device.getAddress());
-			        }
-			    }
-				showBTDialogFragment();
+		if (primeraVegada) {
+			if (bluetoothManager.isBluetoothSupported()) {
+				if (bluetoothManager.isBluetoothEnabled()) {
+					Set<BluetoothDevice> pairedDevices = bluetoothManager.getPairedDevices();
+					if (pairedDevices.size() > 0) {
+				        for (BluetoothDevice device : pairedDevices) {
+				            // Add the name and address to an array adapter to show in a ListView
+				            foundDevicesList.add(device.getName() + "\n" + device.getAddress());
+				        }
+				    }
+					showBTDialogFragment();
+				}
+				else {				
+					bluetoothManager.enableBluetooth();                
+				}
 			}
-			else {				
-				bluetoothManager.enableBluetooth();                
+			else {
+				AlertDialogFragment dialogNoBtSupport = AlertDialogFragment.newInstance(R.string.title_warning, "Bluetooth No Soportat");
+				dialogNoBtSupport.show(getSupportFragmentManager(), "BtNoSupported");			
 			}
+		} else {
+			crearThreadConnexio(mDeviceCon);
 		}
-		else {
-			AlertDialogFragment dialogNoBtSupport = AlertDialogFragment.newInstance(R.string.title_warning, "Bluetooth No Soportat");
-			dialogNoBtSupport.show(getSupportFragmentManager(), "BtNoSupported");			
-		}
-		
 	}
 	
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-	  super.onSaveInstanceState(savedInstanceState);
-	  savedInstanceState.putInt("mStackLevel", mStackLevel);
+		super.onSaveInstanceState(savedInstanceState);
+	  	savedInstanceState.putInt("mStackLevel", mStackLevel);
+	  	savedInstanceState.putBoolean("primeraVegada", primeraVegada);
+	}
+	
+	@Override
+	public Object onRetainCustomNonConfigurationInstance () {
+		return (Object) mDeviceCon;
 	}
 	
 	@Override
@@ -158,6 +148,10 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
+		Manthread.cancel();
+		System.out.println("Manthread cancelat");
+		Conthread.cancel();
+		System.out.println("Conthread cancelat");
 	}
 	
 	@Override
@@ -323,21 +317,23 @@ public class MainActivity extends FragmentActivity {
 	}
 	
 	public void crearThreadConnexio(BluetoothDevice remoteDevice) {
+		mDeviceCon = remoteDevice;
 		Conthread = new BTClientThread(remoteDevice, mHandler);
 		Conthread.start();
+		primeraVegada = false;
 		Manthread = new BTManagingConThread(Conthread.returnSocket(), mHandler);
 		Manthread.start();		
 	}
 	
 	public void enviarStringBT(String s) {
-		Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.cta);
-		
-		Message msg = mHandler.obtainMessage(1,bm);
-		mHandler.sendMessage(msg);
-		//Manthread.write(s.getBytes());
+		Manthread.write(s.getBytes());
 	}
 	
 	public void enviarByteBT(byte[] b) {
 		Manthread.write(b);
+	}
+	
+	public void activaDesactivaBotoWraperMain(boolean on) {
+		mSectionsPagerAdapter.activaDesactivaBotoWraper(on);
 	}
 }

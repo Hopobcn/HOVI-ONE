@@ -1,5 +1,6 @@
 package fib.pec.hovione;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -117,6 +118,7 @@ public class ControlSectionFragment extends Fragment {
 					motor_propeller.setEnabled(true);
 					button_esquerra.setEnabled(true);
 					button_dreta.setEnabled(true);
+					((MainActivity) getActivity()).activaDesactivaBotoWraperMain(true);
 				} else {
 					motor_fan.setEnabled(false);
 					motor_fan.setProgress(0);
@@ -124,6 +126,7 @@ public class ControlSectionFragment extends Fragment {
 					motor_propeller.setProgress(0);
 					button_esquerra.setEnabled(false);
 					button_dreta.setEnabled(false);
+					((MainActivity) getActivity()).activaDesactivaBotoWraperMain(false);
 				}
 			}
 			
