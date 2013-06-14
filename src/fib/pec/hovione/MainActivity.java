@@ -11,15 +11,21 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.Menu;
+import android.widget.Toast;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements SensorEventListener {
 	
 	//////// Constants De La Classe ////////////////////////////////////////////////////////////////////////////////////////////	
 	private static final int REQUEST_ENABLE_BT = 1; //constant per identificar peticio de engegar bluetooth
@@ -78,6 +84,9 @@ public class MainActivity extends FragmentActivity {
 			return false;
 		}
 	});
+	
+	private Sensor msensor;
+	
 	/////// Metodes /////////////////////////////////////////////////////////////////////////////////	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -126,6 +135,15 @@ public class MainActivity extends FragmentActivity {
 		} else {
 			crearThreadConnexio(mDeviceCon);
 		}
+		
+		SensorManager sman = (SensorManager) getSystemService(Context.SENSOR_SERVICE); 
+		msensor = sman.getDefaultSensor(Sensor.TYPE_GRAVITY);
+		if (msensor != null) {
+			sman.registerListener(this, msensor, SensorManager.SENSOR_DELAY_NORMAL);
+		}
+		else {
+			Toast.makeText(getApplicationContext(), "Sensor not availabe", Toast.LENGTH_LONG).show();
+		}
 	}
 	
 	@Override
@@ -148,9 +166,9 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		Manthread.cancel();
+		if (Manthread != null) Manthread.cancel();
 		System.out.println("Manthread cancelat");
-		Conthread.cancel();
+		if (Conthread != null) Conthread.cancel();
 		System.out.println("Conthread cancelat");
 	}
 	
@@ -193,8 +211,6 @@ public class MainActivity extends FragmentActivity {
 		getMenuInflater().inflate(R.menu.activity_main, menu); //R.menu.activity_main --> /res/menu/activity_main.xml
 		return true;
 	}
-	
-	
 	
 	private void configureActionBar() {
 		
@@ -245,6 +261,20 @@ public class MainActivity extends FragmentActivity {
 	
 	public void close_application() {
 		finish();
+	}
+	
+	/** SENSORS *******************************************************************/
+	
+	@Override
+	public void onAccuracyChanged(Sensor sensor, int accuracy)
+	{
+		
+	}
+
+	@Override
+	public void onSensorChanged(SensorEvent event)
+	{
+		Log.v("HOVI-ONE", "values: " + event.values[0] + " " + event.values[1] + " " + event.values[2]);
 	}
 
 	//*****************************BLUETOOTH**************************************************
