@@ -1,6 +1,5 @@
 package fib.pec.hovione;
 
-import java.util.ArrayList;
 import java.util.Set;
 
 import android.bluetooth.BluetoothAdapter;
@@ -9,7 +8,6 @@ import android.content.BroadcastReceiver;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.support.v4.app.FragmentActivity;
-import android.widget.ArrayAdapter;
 
 public class BluetoothManager {
 

@@ -1,9 +1,5 @@
 package fib.pec.hovione;
 
-import java.io.File;
-import java.util.Random;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,7 +7,6 @@ import java.io.OutputStream;
 import android.bluetooth.BluetoothSocket;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 
@@ -41,10 +36,10 @@ public class BTManagingConThread extends Thread {
 	public void run() {
 		byte[] buffer = new byte[1024];
 		byte[] tam = new byte[4];
-		int tamany = -1;
 		int numE = 0;
 		int num = 0;
-		String auxiliar = "";
+		int tamany;
+		//String auxiliar = "";
 		try {
 			BTManagingConThread.sleep(1);
 		} catch (InterruptedException e1) {
@@ -73,7 +68,7 @@ public class BTManagingConThread extends Thread {
 		}*/
 		
 		//boolean enviarPeticio = true;
-		
+
 	    while (true) {
 			String missatge = "";
 
@@ -98,7 +93,7 @@ public class BTManagingConThread extends Thread {
 					}
 					missatge = new String(buffer);
 					//System.out.println(" Missatge " + missatge);
-					//System.out.println("\n es tamany " + tamany);
+					System.out.println("\n es tamany " + tamany);
 					
 					String str = missatge.replace(" ", "");
 					
@@ -143,7 +138,7 @@ public class BTManagingConThread extends Thread {
 			
 		}
 	}
-	private void guardarSD(byte[]bytes) {
+	/*private void guardarSD(byte[]bytes) {
 		File f = new File(Environment.getExternalStorageDirectory()
           + File.separator + "test"+ new Random() +".jpg");
 		try {
@@ -174,5 +169,5 @@ public class BTManagingConThread extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+	}*/
 }

@@ -1,6 +1,5 @@
 package fib.pec.hovione;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,7 +12,6 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
 public class ControlSectionFragment extends Fragment {

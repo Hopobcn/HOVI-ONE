@@ -3,14 +3,11 @@ package fib.pec.hovione;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.UUID;
-
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.os.Message;
-import android.os.ParcelUuid;
 
 public class BTClientThread extends Thread {
 	private BluetoothSocket socket;

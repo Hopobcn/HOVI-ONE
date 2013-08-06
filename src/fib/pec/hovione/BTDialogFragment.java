@@ -1,17 +1,10 @@
 package fib.pec.hovione;
 
-import java.io.IOException;
 import java.util.ArrayList;
-
-import javax.security.auth.callback.Callback;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.ParcelUuid;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,7 +23,6 @@ public class BTDialogFragment extends DialogFragment {
 	private ListView	llistaBtLayout;
 	private Button discoverButton;
 	private BluetoothDevice remoteDevice;
-	private BluetoothSocket socket;
 	
 	
 	
